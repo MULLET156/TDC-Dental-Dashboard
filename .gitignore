@@ -1,0 +1,9 @@
+# Never commit these
+.env
+data/
+certs/
+*.pem
+*.key
+*.tmp
+node_modules/
+examples/hello-module/.env
