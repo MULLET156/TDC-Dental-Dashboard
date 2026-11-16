@@ -1,4 +1,5 @@
 /* TDC Office shared look (CONTRACT §6). Every module page includes this file.
+   Colours and logos come from TDC-Office-Plan/brand/.
    Use the --tdc-* variables and the .tdc-* classes; don't ship your own fonts. */
 :root {
   --tdc-primary: #51573d;        /* Toledo Dental Care forest olive (from the logo) */
@@ -8,7 +9,7 @@
   --tdc-accent: #c9822f;
   --tdc-bg: #f4f6f7;
   --tdc-surface: #ffffff;
-  --tdc-text: #1d2a30;
+  --tdc-text: #1b1f23;           /* near-black from TDC-Office-Plan/brand */
   --tdc-muted: #5d6d74;
   --tdc-border: #d6dfe2;
   --tdc-ok: #1f7a4a;
