@@ -124,8 +124,9 @@ async function main() {
     if (!t || typeof t.id !== 'string' || typeof t.title !== 'string' || typeof t.path !== 'string' || !/^\/tiles\/[A-Za-z0-9_-]+$/.test(t.path)) { fail(`${label}: needs id, title and a path like /tiles/<id>`); continue; }
     if (!Array.isArray(t.roles) || !t.roles.every((r) => ROLES.includes(r))) fail(`${label}: roles must be a list of valid roles`);
     if (typeof t.refreshSeconds !== 'number') warn(`${label}: refreshSeconds should be a number`);
-    const tsys = { ...sys, id };
-    const r = await request('GET', t.path, signed('GET', t.path, tsys), null, 6000);
+    // CONTRACT §3: tiles are requested as the logged-in staff member.
+    const asUser = who([(t.roles && t.roles[0]) || 'owner']);
+    const r = await request('GET', t.path, signed('GET', t.path, asUser), null, 6000);
     if (r.status !== 200 || !r.json) { fail(`${label}: GET ${t.path} should return JSON (got ${r.status || r.error})`); continue; }
     r.ms <= 3000 ? pass(`${label}: answered in ${r.ms} ms`) : fail(`${label}: took ${r.ms} ms (must be under 3000 ms; cache it)`);
     const d = r.json;

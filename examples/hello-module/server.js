@@ -79,8 +79,10 @@ function createHelloServer({ secret, stage = 'design', log = (l) => console.log(
     const url = new URL(req.url, 'http://module');
     const p = url.pathname;
 
-    // CONTRACT §4 and §5. The Dashboard asks as user "dashboard", role "system".
+    // CONTRACT §4: the manifest is requested as user "dashboard", role "system".
     if (p === '/manifest.json' && req.method === 'GET') return json(res, 200, MANIFEST);
+    // CONTRACT §3/§5: tiles are requested as the logged-in staff member,
+    // so a tile can be personal. Check roles like any page.
     if (p === '/tiles/greeting' && req.method === 'GET') {
       // CONTRACT §5: JSON only, at most 8 items, hrefs are module-relative,
       // answer within 3 seconds. Never phone numbers, birthdates or SSNs.
@@ -90,6 +92,7 @@ function createHelloServer({ secret, stage = 'design', log = (l) => console.log(
         value: t.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZone: 'America/Los_Angeles' }),
         status: 'ok',
         items: [
+          { text: `Personal: you are ${who.name}`, href: '/' },
           { text: 'This tile comes from the sample module', href: '/' },
           { text: 'Try the echo form', href: '/echo' },
         ],
@@ -98,6 +101,7 @@ function createHelloServer({ secret, stage = 'design', log = (l) => console.log(
       });
     }
     if (p === '/tiles/owners' && req.method === 'GET') {
+      if (!hasRole(who, ['owner', 'admin'])) return json(res, 403, { error: 'Not allowed' });
       return json(res, 200, { title: 'Owner-only tile', value: '42', status: 'warn', items: [{ text: 'Only owners and admins see this', href: '/owners' }], link: '/owners', updated: new Date().toISOString() });
     }
 

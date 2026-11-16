@@ -79,17 +79,18 @@ async function startDemo() {
   });
 }
 
-startDemo().then(() => {
-  server.listen(port, host, () => {
-    const shown = host === '0.0.0.0' ? 'this server\'s address' : host;
-    console.log(`TDC Dashboard ${pkg.version} (${stage} stage) is running: ${tls ? 'https' : 'http'}://${shown}:${port}/`);
-    if (app.users.count() === 0) {
-      console.log(env.SETUP_CODE
-        ? 'First run: open the address above and create the owner account. You will need the SETUP_CODE from your settings.'
-        : `First run: open the address above and create the owner account. The setup code is in ${path.join(dataDir, 'SETUP-CODE.txt')}`);
-    }
-  });
-}).catch((err) => fail(err.message));
+// Start the Dashboard itself FIRST. Hostinger hands the public address to
+// the first web server the app starts, so the demo module must come after.
+server.listen(port, host, () => {
+  const shown = host === '0.0.0.0' ? 'this server\'s address' : host;
+  console.log(`TDC Dashboard ${pkg.version} (${stage} stage) is running: ${tls ? 'https' : 'http'}://${shown}:${port}/`);
+  if (app.users.count() === 0) {
+    console.log(env.SETUP_CODE
+      ? 'First run: open the address above and create the owner account. You will need the SETUP_CODE from your settings.'
+      : `First run: open the address above and create the owner account. The setup code is in ${path.join(dataDir, 'SETUP-CODE.txt')}`);
+  }
+  startDemo().catch((err) => console.error(`The sample module did not start: ${err.message}`));
+});
 
 server.on('error', (err) => {
   if (err.code === 'EADDRINUSE') fail(`port ${port} is already in use. Is the Dashboard already running?`);
