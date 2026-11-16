@@ -124,6 +124,10 @@ test('static files cannot escape the public folder', async (t) => {
     assert.ok(!r.text.includes('createApp'), p);
   }
   assert.equal((await ctx.req('GET', '/shared/shell.js')).status, 200);
+  const font = await ctx.req('GET', '/shared/fonts/figtree.woff2');
+  assert.equal(font.status, 200);
+  assert.equal(font.headers['content-type'], 'font/woff2');
+  for (const p of ['/shared/fonts/.hidden', '/shared/fonts/x/y.woff2', '/shared/fonts/..%2f..%2f..%2fpackage.json']) assert.notEqual((await ctx.req('GET', p)).status, 200, p);
 });
 
 test('trusting a proxy (Hostinger): https detected, Origin checked against https, client IP from the proxy', async () => {
