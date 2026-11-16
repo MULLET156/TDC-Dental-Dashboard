@@ -157,7 +157,10 @@ test('tiles: rendered from module JSON, hrefs prefixed, filtered by role and by 
   const tile = await ctx.req('GET', '/api/tiles/hello/greeting', { cookie: owner });
   assert.equal(tile.json.ok, true);
   assert.equal(tile.json.tile.link, '/m/hello/');
-  assert.deepEqual(tile.json.tile.items.map((i) => i.href), ['/m/hello/', '/m/hello/echo']);
+  assert.deepEqual(tile.json.tile.items.map((i) => i.href), ['/m/hello/', '/m/hello/', '/m/hello/echo']);
+  assert.equal(tile.json.tile.items[0].text, 'Personal: you are Olive Owner', 'tiles are requested as the logged-in user');
+  const tileLog = JSON.parse(ctx.helloLogs.filter((l) => l.includes('/tiles/greeting')).pop());
+  assert.equal(tileLog.user, 'owner1');
 
   await addUser(ctx, owner, { username: 'hy', roles: ['hygienist'] });
   const { cookie: hy } = await login(ctx, 'hy', 'staff-password-1');

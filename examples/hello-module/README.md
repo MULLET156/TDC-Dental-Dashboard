@@ -36,6 +36,6 @@ It reads `MODULE_SECRET` from that file (never prints it), then checks `/health`
 - **POST/PUT/DELETE from your pages just work.** Forms and `fetch` from pages on the same site send the right `Origin`. Use `fetch(url, { credentials: 'same-origin' })`.
 - **Polling:** if your page refreshes data on a timer, send the header `X-TDC-Background: 1` so the polling doesn't keep an idle user logged in.
 - **Uploads** (audio) go through as the raw request body, up to 25 MB, with `Content-Type` kept. Over 25 MB gets `413`.
-- **Who's asking:** `X-TDC-Name` may be percent-encoded if it has accents (`José`); `tdc-verify.js` decodes it. The manifest and tiles are requested as user `dashboard`, role `system`.
+- **Who's asking:** `X-TDC-Name` may be percent-encoded if it has accents (`José`); `tdc-verify.js` decodes it. The manifest is requested as user `dashboard`, role `system`. Tiles are requested as the logged-in staff member, so they can be personal (cache per user if needed) and should check roles like a page.
 - **Check roles yourself** on every page and action (§3). The Dashboard also hides your module from users whose role isn't in `manifest.roles`.
 - **Design stage:** a module that reads Open Dental must check that `GATEWAY_URL/health` reports `"fake": true` at startup and refuse to start otherwise (PLAN.md, "Two stages"). Hello has no gateway, so it skips this.
