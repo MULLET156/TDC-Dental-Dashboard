@@ -11,6 +11,7 @@ const { verifyTdcRequest, hasRole } = require('./tdc-verify');
 
 const VERSION = '0.1.0';
 const ALL_ROLES = ['owner', 'admin', 'doctor', 'hygienist', 'assistant', 'front'];
+const KIT = require('./kit');
 
 // CONTRACT §4: the manifest. Paths are module-relative.
 const MANIFEST = {
@@ -23,6 +24,7 @@ const MANIFEST = {
   roles: ALL_ROLES,
   nav: [
     { label: 'Hello', path: '/' },
+    { label: 'Design kit', path: '/kit' },
     { label: 'Echo form', path: '/echo' },
     { label: 'Owners only', path: '/owners' },
   ],
@@ -36,11 +38,27 @@ function esc(s) {
   return String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 
-// CONTRACT §6: every page includes the shared CSS and shell.js from the
-// Dashboard (same site, so plain "/shared/..." works), sets data-module,
-// and puts content in <main class="tdc-main">. No inline <script>: the
-// Dashboard's security policy blocks them. Put scripts in files.
-function page(who, title, inner) {
+// CONTRACT §6 + DESIGN.md: every page includes the shared CSS and shell.js from
+// the Dashboard (same site, so plain "/shared/..." works), sets data-module (which
+// picks the accent colour), and puts content in <main class="tdc-main">.
+// The page's own buttons go in <nav class="tdc-actions"> as .tdc-hbtn with a
+// data-kind; shell.js moves them into the header (and into More on phones).
+// No inline <script>: the Dashboard's security policy blocks them.
+function actions(who, current) {
+  const b = esc(who.base);
+  const btn = (kind, icon, label, href, extra = '') => `<a class="tdc-hbtn" data-kind="${kind}" data-icon="${icon}" href="${b}${href}"${current === href ? ' aria-current="page"' : ''}>${label}${extra}</a>`;
+  return `<nav class="tdc-actions" aria-label="Page actions">
+${btn('list', 'list', 'All items', '/kit')}
+${btn('new', 'plus', 'New item', '/echo')}
+${btn('log', 'history', 'Log', '/log')}
+${btn('warn', 'clock', 'Expiring', '/kit?expiring', ' <span class="tdc-hbtn-count">4</span>')}
+${btn('money', 'dollar', 'Spending', '/kit?spending')}
+${btn('tool', 'edit', 'Editor', '/kit?editor')}
+${btn('setup', 'settings', 'Setup', '/owners')}
+</nav>`;
+}
+
+function page(who, title, inner, current = '') {
   const b = esc(who.base);
   return `<!doctype html>
 <html lang="en"><head>
@@ -52,6 +70,7 @@ function page(who, title, inner) {
 </head>
 <body data-module="hello">
 <main class="tdc-main">
+${actions(who, current)}
 ${inner}
 </main>
 </body></html>`;
@@ -130,6 +149,14 @@ function createHelloServer({ secret, stage = 'design', log = (l) => console.log(
 <button class="tdc-btn" type="button" id="ping">Ask the module the time (fetch)</button>
 <span id="ping-out" class="tdc-muted"></span>
 </div>`));
+    }
+
+    // Every shared class from DESIGN.md §8, with made-up data. Copy from here.
+    if (p === '/kit' && req.method === 'GET') return send(res, 200, page(who, 'Design kit', KIT, '/kit'));
+    if (p === '/log' && req.method === 'GET') {
+      return send(res, 200, page(who, 'Log', `
+<header class="tdc-pagehead"><h2><span data-icon="history"></span>Log</h2><span class="tdc-count">0 entries</span></header>
+<div class="tdc-empty"><p>Nothing logged yet</p>Entries show up here once someone marks a task done.</div>`, '/log'));
     }
 
     if (p === '/echo') {

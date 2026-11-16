@@ -15,7 +15,7 @@ The Dashboard **never talks to Open Dental**. It handles logins and passes each 
 - **Lockout** after 5 wrong passwords for 15 minutes (an owner or admin can clear it), and 20 wrong tries from one device blocks that device for 15 minutes.
 - **Settings** (owner and admin only): staff and roles, modules, links to other apps, which tiles show, login times.
 - **Home page** with tiles from each module. If a module is down, its tiles say **Not responding** and everything else still works.
-- **The shared look** (`/shared/tdc.css`, `/shared/shell.js`) with the Toledo Dental Care logo, used by every module.
+- **The shared look** for every module, following [DESIGN.md](https://github.com/MULLET156/TDC-Office-Plan/blob/main/DESIGN.md): `/shared/tdc.css`, `/shared/shell.js`, the fonts (`/shared/fonts/`) and the logos. One accent colour per app, a light and a dark theme, and a phone layout with a bottom tab bar. See "The shared look" below.
 - **Sample module** ("Hello") and a **contract checker** for the other module builders.
 - **HTTPS:** a test certificate for this computer, and a built-in Let's Encrypt client for the office server that renews by itself ([docs/CERTIFICATE.md](docs/CERTIFICATE.md)).
 - **Security:** only this site's own pages can submit forms, security headers on every page, and nothing a browser sends can pretend to be a different staff member.
@@ -99,6 +99,19 @@ All settings are explained in `.env.example`. The important ones:
 | `DEMO_HELLO` | `1` = run the sample module inside the Dashboard |
 
 **Forgot the owner password?** If another owner exists, they can set a new one in **Settings → Staff**. If not, stop the Dashboard, rename `data\users.json` to `users-old.json`, start it again, and create the owner account again (staff accounts would need re-adding; module settings are kept).
+
+## The shared look
+
+Every page in the suite uses one stylesheet and one header script, both served by the Dashboard. They follow [DESIGN.md](https://github.com/MULLET156/TDC-Office-Plan/blob/main/DESIGN.md) and the pictures in `TDC-Office-Plan/brand/reference/`.
+
+- **Header:** logo, the app's name with today's date, and on the right **Apps** (switch between Home, modules, Settings and the Lab Tracker, Supply Room and Maintenance Tracker), your name, the light/dark button, **Lock** and **Log out**. A second row holds the page's own buttons.
+- **Phones:** a slim header with the logo mark, and a tab bar at the bottom. Everything else is under **More**.
+- **Colours:** each app has its own accent (Dashboard navy, Daysheet blue, Treatment Finder violet, and so on), set by `<body data-module="…">`. Status colours mean the same everywhere (red overdue/911, amber due soon, green done).
+- **Dark mode:** follows the device. The sun/moon button switches it, and the choice is remembered on that device.
+- **Fonts:** Archivo, Figtree and JetBrains Mono, served from `/shared/fonts/`. Nothing loads from outside sites.
+- The sample module's **Design kit** page (`/m/hello/kit` with `DEMO_HELLO=1`) shows every piece with made-up data.
+
+`public/shared/tdc.css` is generated: change `scripts/build-css.js` (colours) or `scripts/tdc-css-components.css` (everything else), then run `node scripts/build-css.js`. A test fails if you forget.
 
 ## For module builders
 

@@ -184,8 +184,9 @@ test('/api/nav lists modules and links for the user; settings only for owner/adm
   assert.equal(nav.settings, true);
   assert.equal(nav.canLock, true);
   assert.equal(nav.modules[0].id, 'hello');
-  assert.deepEqual(nav.modules[0].nav.map((n) => n.href), ['/m/hello/', '/m/hello/echo', '/m/hello/owners']);
+  assert.deepEqual(nav.modules[0].nav.map((n) => n.href), ['/m/hello/', '/m/hello/kit', '/m/hello/echo', '/m/hello/owners']);
   assert.deepEqual(nav.links.map((l) => l.name), ['Lab Tracker', 'Maintenance Tracker']);
+  assert.deepEqual(nav.links.map((l) => [l.id, l.icon]), [['lab', 'tooth'], ['maintenance', 'wrench']], 'id picks the app accent');
 
   await addUser(ctx, owner, { username: 'fd', roles: ['front'] });
   const { cookie } = await login(ctx, 'fd', 'staff-password-1');

@@ -6,7 +6,8 @@ A tiny module that follows [CONTRACT.md](https://github.com/MULLET156/TDC-Office
 |---|---|
 | `tdc-verify.js` | **Copy this into your module.** Verifies the Dashboard's signature (§3) and returns `{ user, name, roles, base }`, or `null` → answer `401`. |
 | `server.js` | `/health` without a signature, everything else signed; the manifest (§4); tiles as JSON (§5); pages with the shared look (§6); a role check; a POST form; a 25 MB upload endpoint; JSON request logs without query strings (§8). |
-| `public/hello.js` | A page script in its own file (see "No inline scripts" below). |
+| `kit.js` | The **Design kit** page: every shared class from DESIGN.md §8 (status tiles, page banner, search and filters, Group by, lists with status stripes, chips, meters, header buttons, callout, empty state) with made-up data. **Copy markup from here.** |
+| `public/hello.js` | A page script in its own file (see "No inline scripts" below): status tile switching, and "Group by" remembered on the device. |
 
 ## Run it on its own (Windows)
 
@@ -25,6 +26,15 @@ node scripts\check-module.js http://127.0.0.1:3101 --env C:\path\to\your-module\
 ```
 
 It reads `MODULE_SECRET` from that file (never prints it), then checks `/health`, that unsigned, wrongly signed, old (more than 30 s), future, replayed and tampered requests get `401`, the manifest, every tile (JSON, answers in under 3 s, at most 8 items, module-relative links, no HTML), and that your first page uses the shared look with no inline scripts. Exit code `0` = all required checks passed. Run it before every PR.
+
+## The shared look (DESIGN.md)
+
+- `<body data-module="your-id">` sets your accent colour (`daysheet`, `finder`, `voice`, `numbers`). Ask the Shared Design agent for a new one before adding a module.
+- Put the page's buttons in `<nav class="tdc-actions">` as `<a class="tdc-hbtn" data-kind="list|new|log|setup|money|warn|tool">`. Mark the current one with `aria-current="page"`. `shell.js` moves them into the header (and into **More** on phones).
+- Icons: `<span data-icon="bell"></span>`. `shell.js` fills in the shared icon. Names: calendar, search, mic, chart, flask, tooth, box, wrench, home, settings, bell, alert, clock, pending, check, list, plus, history, dollar, truck, cart, pulse, pause, edit, filter, arrow, link.
+- Status: `data-status="accent|alert|911|warn|low|ok|new|info"` on `.tdc-stat`, `.tdc-row`, `.tdc-group`, `.tdc-chip`, `.tdc-meter` and `.tdc-callout`.
+- On phones, `.tdc-stats` becomes the bottom tab bar (give long labels a `data-short="…"`), `.tdc-pagehead` and `.tdc-find` move into the header, and dropdowns hide behind a **Filters** button. You don't write any of that.
+- Only `--tdc-*` colours, no fonts of your own, and everything must work in dark mode (it will, if you only use the variables).
 
 ## Things the contract implies that are easy to miss
 
