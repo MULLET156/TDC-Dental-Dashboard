@@ -123,7 +123,12 @@ test('static files cannot escape the public folder', async (t) => {
     assert.notEqual(r.status, 200, p);
     assert.ok(!r.text.includes('createApp'), p);
   }
-  assert.equal((await ctx.req('GET', '/shared/shell.js')).status, 200);
+  const sh = await ctx.req('GET', '/shared/shell.js');
+  assert.equal(sh.status, 200);
+  assert.equal(sh.headers['cache-control'], 'no-cache', 'shared CSS/JS re-check after every update');
+  assert.ok(sh.headers.etag);
+  assert.equal((await ctx.req('GET', '/shared/shell.js', { headers: { 'if-none-match': sh.headers.etag } })).status, 304);
+  assert.equal((await ctx.req('GET', '/shared/tdc.css')).headers['cache-control'], 'no-cache');
   const font = await ctx.req('GET', '/shared/fonts/figtree.woff2');
   assert.equal(font.status, 200);
   assert.equal(font.headers['content-type'], 'font/woff2');
