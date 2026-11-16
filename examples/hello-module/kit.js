@@ -15,11 +15,12 @@ module.exports = `
   <button class="tdc-stat" data-status="ok" aria-selected="false"><span class="tdc-stat-count">27</span><span data-icon="check"></span><span class="tdc-stat-label" data-short="Done">Completed</span></button>
 </nav>
 
-<!-- Page banner: icon + title, mono count, optional help line -->
+<!-- Page banner: icon + title, mono count, and a one-line help text.
+     shell.js hides .tdc-help behind an (i) button after the title. -->
 <header class="tdc-pagehead">
   <h2><span data-icon="bell"></span>Today</h2>
   <span class="tdc-count">24 need attention</span>
-  <p>Everything due today or late. Tap a tile above to switch.</p>
+  <p class="tdc-help">Everything due today or late. Tap a tile above to switch.</p>
 </header>
 
 <!-- Search + filters. On phones the dropdowns hide behind a "Filters" button. -->

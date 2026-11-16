@@ -359,6 +359,29 @@
     closeMenus();
   }
 
+  // ---------- (i) info button on page banners (DESIGN.md §5) ----------
+  // <header class="tdc-pagehead"><h2>Title</h2> <span class="tdc-count">…</span>
+  //   <p class="tdc-help">One line of help.</p></header>
+  // The help line starts hidden; the (i) button after the title shows it.
+  var infoCount = 0;
+  function infoButtons() {
+    document.querySelectorAll('.tdc-pagehead').forEach(function (head) {
+      var help = head.querySelector('.tdc-help') || head.querySelector(':scope > p');
+      var title = head.querySelector('h1, h2, h3');
+      if (!help || !title || head.querySelector('.tdc-info')) return;
+      help.classList.add('tdc-help');
+      if (!help.id) help.id = 'tdc-help-' + (++infoCount);
+      help.hidden = true;
+      var b = el('button', { type: 'button', 'class': 'tdc-info', 'aria-label': 'About this page', 'aria-expanded': 'false', 'aria-controls': help.id, text: 'i' });
+      b.addEventListener('click', function () {
+        var open = help.hidden;
+        help.hidden = !open;
+        b.setAttribute('aria-expanded', open ? 'true' : 'false');
+      });
+      title.insertAdjacentElement('afterend', b);
+    });
+  }
+
   // ---------- Page colour (DESIGN.md §2) ----------
   // The header line and page banner follow the page: the selected status tile,
   // else the header button marked aria-current, else the app's accent. A module
@@ -403,6 +426,7 @@
     icon: icon,
     getJson: getJson,
     hydrateIcons: hydrateIcons,
+    infoButtons: infoButtons,
     ready: new Promise(function (res, rej) { resolveReady = res; rejectReady = rej; })
   };
   window.TDC.ready.catch(function () {});
@@ -410,6 +434,7 @@
   function start() {
     hydrateIcons();
     swapLogos();
+    infoButtons();
     explicitPage = document.body.hasAttribute('data-page-status') || document.body.hasAttribute('data-page-kind');
     watchPageColour();
     if (document.body.getAttribute('data-shell') === 'none') return;

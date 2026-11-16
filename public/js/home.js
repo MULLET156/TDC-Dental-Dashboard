@@ -93,6 +93,23 @@
     drawCallout();
   }
 
+  // CONTRACT §5b: a standalone app's tile is one label/number row in its card.
+  function renderAppRow(row, t, r) {
+    row.textContent = '';
+    var tile = r && r.ok ? r.tile : null;
+    var label = tile && tile.link ? el('a', { href: tile.link, target: '_blank', rel: 'noopener' }, tile.title || t.title) : el('span', {}, (tile && tile.title) || t.title);
+    row.appendChild(label);
+    var v = el('span', { 'class': 'tdc-kv-value' }, tile ? (tile.value || '—') : 'Not responding');
+    if (tile && tile.status !== 'ok') v.setAttribute('data-status', tile.status);
+    if (!tile) v.className += ' tdc-muted';
+    row.appendChild(v);
+    alerts[t.url] = tile && tile.status === 'alert' ? t.moduleName + ' · ' + (tile.title || t.title) + (tile.value ? ': ' + tile.value : '') : null;
+    drawCallout();
+  }
+  function loadAppRow(row, t) {
+    window.TDC.getJson(t.url).then(function (r) { renderAppRow(row, t, r); }).catch(function () { renderAppRow(row, t, null); });
+  }
+
   function loadTile(card, t) {
     window.TDC.getJson(t.url).then(function (r) {
       if (r.ok && r.tile) renderTile(card, t, r.tile); else renderDown(card, t);
@@ -107,7 +124,9 @@
     nav.links.forEach(function (l) {
       var card = el('section', { 'class': 'tdc-card tdc-tile tdc-link-card', 'data-module': l.id || '', 'aria-label': l.name });
       card.appendChild(head(l.icon, l.name, l.url, true));
-      card.appendChild(el('div', { 'class': 'tdc-muted' }, 'Opens in a new tab'));
+      var rows = el('div', { 'class': 'tdc-kv', 'data-app': l.id || '' });
+      card.appendChild(rows);
+      card.appendChild(el('div', { 'class': 'tdc-muted tdc-link-note' }, 'Opens in a new tab'));
       links.appendChild(card);
     });
     document.getElementById('links-section').hidden = !nav.links.length;
@@ -129,9 +148,19 @@
     return window.TDC.getJson('/api/tiles');
   }).then(function (r) {
     var grid = document.getElementById('tiles');
-    document.getElementById('tiles-section').hidden = !r.tiles.length;
+    var appTiles = r.tiles.filter(function (t) { return t.app; });
+    var modTiles = r.tiles.filter(function (t) { return !t.app; });
+    appTiles.forEach(function (t) {
+      var box = document.querySelector('.tdc-kv[data-app="' + t.module + '"]');
+      if (!box) return;
+      var row = el('div', { 'class': 'tdc-kv-row' }, t.title);
+      box.appendChild(row);
+      loadAppRow(row, t);
+      setInterval(function () { if (!document.hidden) loadAppRow(row, t); }, (t.refreshSeconds || 120) * 1000);
+    });
+    document.getElementById('tiles-section').hidden = !modTiles.length;
     document.getElementById('no-tiles').hidden = !!(r.tiles.length || nav.links.length);
-    r.tiles.forEach(function (t) {
+    modTiles.forEach(function (t) {
       var card = el('section', { 'class': 'tdc-card tdc-tile', 'data-module': t.module, 'aria-label': t.title });
       card.appendChild(head(t.icon, t.title));
       card.appendChild(el('div', { 'class': 'tdc-muted' }, 'Loading…'));

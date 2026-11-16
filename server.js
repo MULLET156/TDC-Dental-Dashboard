@@ -67,20 +67,19 @@ server.headersTimeout = 60 * 1000;
 function fileStamp(f) { try { return String(fs.statSync(f).mtimeMs); } catch { return null; } }
 
 // Optional built-in sample module (DEMO_HELLO=1), so there's something to
-// see on a fresh install. It runs inside this process on a private port.
+// see on a fresh install. It runs inside this process and never listens on a
+// port of its own: Hostinger allows only one listening server per app.
 async function startDemo() {
   if (env.DEMO_HELLO !== '1') return;
   const { createHelloServer } = require('./examples/hello-module/server');
   const secret = crypto.randomBytes(32).toString('hex');
   const hello = createHelloServer({ secret, stage, log: () => {} });
-  await new Promise((r) => hello.listen(0, '127.0.0.1', r));
   app.config.extraModules.push({
-    id: 'hello', name: 'Hello (sample)', baseUrl: `http://127.0.0.1:${hello.address().port}`, secret, enabled: true, builtIn: true,
+    id: 'hello', name: 'Hello (sample)', baseUrl: 'http://in-process', secret, enabled: true, builtIn: true, inProcess: hello,
   });
 }
 
-// Start the Dashboard itself FIRST. Hostinger hands the public address to
-// the first web server the app starts, so the demo module must come after.
+// The Dashboard is the only server that listens on a port.
 server.listen(port, host, () => {
   const shown = host === '0.0.0.0' ? 'this server\'s address' : host;
   console.log(`TDC Dashboard ${pkg.version} (${stage} stage) is running: ${tls ? 'https' : 'http'}://${shown}:${port}/`);

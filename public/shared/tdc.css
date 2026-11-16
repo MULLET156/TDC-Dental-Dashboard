@@ -296,7 +296,15 @@ main .tdc-actions { margin-bottom: 12px; }
 .tdc-pagehead h2 { display: flex; align-items: center; gap: 10px; margin: 0; font-size: 24px; color: inherit; }
 .tdc-pagehead h2 .tdc-icon { width: 22px; height: 22px; }
 .tdc-pagehead .tdc-count { margin-left: auto; font-family: var(--tdc-font-mono); font-size: 14px; }
-.tdc-pagehead p { flex-basis: 100%; margin: 0; font-size: 14px; color: var(--tdc-ink); }
+.tdc-pagehead .tdc-help, .tdc-pagehead p { flex-basis: 100%; margin: 0; font-size: 14px; color: var(--tdc-ink); }
+/* (i) button after the banner title: shows / hides the help line (DESIGN.md §5). */
+.tdc-info {
+  position: relative; display: inline-grid; place-items: center; flex: none; width: 22px; height: 22px; padding: 0; margin-left: -4px;
+  border: 1.5px solid var(--tdc-page); border-radius: 50%; background: transparent; color: var(--tdc-page-ink); cursor: pointer;
+  font: italic 700 14px/1 Georgia, "Times New Roman", serif;
+}
+.tdc-info::before { content: ""; position: absolute; inset: -11px; } /* 44px tap area */
+.tdc-info[aria-expanded="true"] { background: var(--tdc-page); border-color: var(--tdc-page); color: var(--tdc-on-solid); }
 
 /* ---------- Search and filters ---------- */
 .tdc-find { display: flex; gap: 8px; align-items: stretch; margin: 0 0 12px; }
@@ -426,6 +434,13 @@ main .tdc-actions { margin-bottom: 12px; }
 .tdc-tile-down::before { display: none; }
 .tdc-links { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
 .tdc-link-card { min-height: 0; }
+.tdc-kv:empty { display: none; }
+.tdc-kv-row { display: flex; align-items: baseline; gap: 12px; min-height: 40px; padding: 8px 0; border-top: 1px solid var(--tdc-line); }
+.tdc-kv-row:first-child { border-top: 0; }
+.tdc-kv-row > a, .tdc-kv-row > span:first-child { color: var(--tdc-ink); text-decoration: none; min-width: 0; }
+.tdc-kv-row > a:hover { color: var(--tdc-accent-ink); text-decoration: underline; }
+.tdc-kv-value { margin-left: auto; font-family: var(--tdc-font-mono); font-size: 18px; font-weight: 700; color: var(--s-text, var(--tdc-ink)); white-space: nowrap; }
+.tdc-kv:not(:empty) + .tdc-link-note { display: none; }
 .tdc-link-card .tdc-tile-head { border-bottom: 0; padding-bottom: 0; }
 .tdc-planned { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
 .tdc-planned > div { display: flex; align-items: center; gap: 12px; padding: 14px 16px; background: var(--tdc-surface); border: 1.5px dashed var(--tdc-line); border-radius: var(--tdc-radius); }
@@ -475,7 +490,8 @@ details.tdc-card > summary { cursor: pointer; font-weight: 650; min-height: var(
   .tdc-header-phone:empty { display: none; }
   .tdc-header-phone .tdc-pagehead { margin-bottom: 8px; padding: 6px 12px; }
   .tdc-header-phone .tdc-pagehead h2 { font-size: 18px; }
-  .tdc-header-phone .tdc-pagehead p { display: none; }
+  .tdc-info { width: 20px; height: 20px; font-size: 13px; }
+  .tdc-info::before { inset: -12px; }
   .tdc-header-phone .tdc-find { margin-bottom: 0; }
   .tdc-main { padding-top: 14px; }
   .tdc-pagehead h2 { font-size: 18px; }

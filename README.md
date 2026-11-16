@@ -113,6 +113,17 @@ Every page in the suite uses one stylesheet and one header script, both served b
 
 `public/shared/tdc.css` is generated: change `scripts/build-css.js` (colours) or `scripts/tdc-css-components.css` (everything else), then run `node scripts/build-css.js`. A test fails if you forget.
 
+## Counts from the Lab Tracker, Supply Room and Maintenance Tracker
+
+These three apps run on their own sites, but they can show their counts on the Dashboard home page ("Late: 2", "To order: 10", "Overdue: 3"). They show counts only, never patient names. Each app needs a **tile token**: a long secret that only that app and the Dashboard know.
+
+1. In the Dashboard: **Settings → Other apps**. Check each app's address, and tick who should see its counts.
+2. Under **Tile tokens**, open the app and click **Make a new token**. Copy the token it shows (it is shown only once).
+3. Put it in that app's server settings (its `config.php` on Hostinger) as `TILE_TOKEN`. Don't email or text it; copy and paste it.
+4. Back in **Settings → Other apps**, each tile shows a green badge with its number, or the reason it isn't working ("Wrong token", "Tiles are turned off in the app").
+
+If the app already has a token, paste it under **Or paste the token the app already has** instead. **Turn tiles off** removes the token from the Dashboard.
+
 ## For module builders
 
 Read [examples/hello-module/README.md](examples/hello-module/README.md). It explains how to check the Dashboard's signature, serve a manifest and tiles, use the shared look, and how to run the contract checker:
