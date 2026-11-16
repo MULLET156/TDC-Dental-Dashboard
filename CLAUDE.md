@@ -17,6 +17,8 @@ This repo is the **front door**: login, staff and roles, sessions, Settings, the
 - `server.js` — reads `.env`, starts HTTPS (or HTTP behind Hostinger), optional built-in Hello demo, certificate reload/renewal.
 - `lib/app.js` — all routes. `lib/modules.js` — pass-through, manifests, tiles. `lib/sign.js` — CONTRACT §3 signature.
 - `lib/users.js` (scrypt), `lib/sessions.js` (12 h / idle / PIN lock), `lib/limiter.js` (lockout), `lib/config.js` (data/config.json).
+- `lib/apptiles.js` — CONTRACT §5b tiles from the standalone apps (server to server, Bearer TILE_TOKEN, 30 s cache, same-app links only). Tokens live in data/config.json and never reach a browser or log.
+- `lib/inproc.js` — runs the built-in sample module inside the process (Hostinger allows only one listening server per app).
 - `lib/x509.js` + `lib/acme.js` + `lib/renew.js` — dev certificate and Let's Encrypt DNS-01, no dependencies.
 - `public/shared/` — the shared look every module uses (DESIGN.md in TDC-Office-Plan). `tdc.css` is **generated**: edit `scripts/build-css.js` (tokens, accents, dark values) or `scripts/tdc-css-components.css`, then `node scripts/build-css.js`. `public/js/home.js` — home page.
 - Follow DESIGN.md exactly; don't restyle on your own. When DESIGN.md is unclear or won't work, open a `Design: ...` issue in TDC-Office-Plan for the Shared Design agent instead of guessing.
