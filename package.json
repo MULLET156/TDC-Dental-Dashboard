@@ -1,0 +1,16 @@
+{
+  "name": "tdc-dental-dashboard",
+  "version": "0.1.0",
+  "description": "TDC Office front door: login, staff, shared look, home tiles, and the signed pass-through to modules.",
+  "private": true,
+  "main": "server.js",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test",
+    "dev-cert": "node scripts/make-dev-cert.js",
+    "check-module": "node scripts/check-module.js",
+    "get-cert": "node scripts/get-cert.js"
+  },
+  "license": "UNLICENSED"
+}
