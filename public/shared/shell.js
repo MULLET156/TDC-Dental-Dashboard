@@ -359,6 +359,29 @@
     closeMenus();
   }
 
+  // ---------- Page colour (DESIGN.md §2) ----------
+  // The header line and page banner follow the page: the selected status tile,
+  // else the header button marked aria-current, else the app's accent. A module
+  // that sets data-page-status or data-page-kind on <body> itself is left alone.
+  var STATUS_PAGE = { alert: 'alert', 911: 'alert', warn: 'warn', low: 'warn', ok: 'ok', 'new': 'new', info: 'info' };
+  var explicitPage = document.body && (document.body.hasAttribute('data-page-status') || document.body.hasAttribute('data-page-kind'));
+  function pageColour() {
+    if (explicitPage) return;
+    var b = document.body;
+    var tile = document.querySelector('.tdc-stats .tdc-stat[aria-selected="true"]:not(.tdc-stat-more), .tdc-stats .tdc-stat[aria-current="page"]:not(.tdc-stat-more)');
+    var btn = document.querySelector('.tdc-actions .tdc-hbtn[aria-current="page"]');
+    var status = tile ? STATUS_PAGE[tile.getAttribute('data-status')] : null;
+    var kind = !tile && btn ? (btn.getAttribute('data-kind') || 'list') : null;
+    if (kind === 'new') kind = null; // "+ New" pages use the accent
+    if (status) b.setAttribute('data-page-status', status); else b.removeAttribute('data-page-status');
+    if (kind) b.setAttribute('data-page-kind', kind); else b.removeAttribute('data-page-kind');
+  }
+  function watchPageColour() {
+    pageColour();
+    if (explicitPage || !window.MutationObserver) return;
+    new MutationObserver(pageColour).observe(document.body, { subtree: true, attributes: true, attributeFilter: ['aria-selected', 'aria-current'] });
+  }
+
   // ---------- Keep the login alive while someone is using the page ----------
   var lastBeat = Date.now();
   function activity() {
@@ -387,6 +410,8 @@
   function start() {
     hydrateIcons();
     swapLogos();
+    explicitPage = document.body.hasAttribute('data-page-status') || document.body.hasAttribute('data-page-kind');
+    watchPageColour();
     if (document.body.getAttribute('data-shell') === 'none') return;
     buildHeader();
     prepareFind();

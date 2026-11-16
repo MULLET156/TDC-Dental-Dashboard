@@ -63,3 +63,13 @@ test('tdc.css is up to date with scripts/build-css.js', () => {
   const after = lf(fs.readFileSync(path.join(__dirname, '..', 'public', 'shared', 'tdc.css'), 'utf8'));
   assert.equal(after, before, 'run "node scripts/build-css.js" and commit tdc.css');
 });
+
+test('header line and page banner follow the page colour (DESIGN.md 2026-11-16)', () => {
+  const css2 = fs.readFileSync(path.join(__dirname, '..', 'public', 'shared', 'tdc.css'), 'utf8');
+  assert.match(css2, /\.tdc-header \{[^}]*border-bottom: 4px solid var\(--tdc-page\)/);
+  assert.match(css2, /\.tdc-pagehead \{[^}]*background: var\(--tdc-page-soft\)[^}]*border-left: 6px solid var\(--tdc-page\)/);
+  for (const s of ['alert', 'warn', 'ok', 'new', 'info']) assert.ok(css2.includes(`body[data-page-status="${s}"]`), s);
+  for (const k of ['list', 'log', 'setup', 'money', 'warn', 'tool']) assert.ok(css2.includes(`body[data-page-kind="${k}"]`), k);
+  assert.match(css2, /\.tdc-find select \{[^}]*background: var\(--tdc-sunk\)/);
+  assert.ok(shell.includes('function pageColour()'));
+});

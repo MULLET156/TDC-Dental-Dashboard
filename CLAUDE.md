@@ -6,7 +6,8 @@ This repo is the **front door**: login, staff and roles, sessions, Settings, the
 
 ## Rules
 - Node.js 20+ built-ins only. No npm dependencies.
-- Work on a branch, open a PR, never push to `main`. Pull `main` and check open PRs first.
+- Pull `main` and check open PRs first. Work on a short branch and open a PR; never push to `main` directly.
+- **Merge as you go** (Ryan, 2026-11-16, see TDC-Office-Plan/CLAUDE.md): merge your own PR as soon as CI is green on Windows and Linux and your own checks pass. Don't wait for Ryan. Merging `main` redeploys the design-stage site on Hostinger (https://palevioletred-viper-775768.hostingersite.com), so check it right after merging (`/health`, `/shared/tdc.css`, the login page) and revert the PR at once if something broke. Contract changes still need Ryan's OK first.
 - No real patient data anywhere (code, tests, logs, screenshots). Tests use fake staff only.
 - Never print or commit secrets. `.env`, `data/` and `certs/` are git-ignored.
 - README and PR descriptions in plain language, Windows first, with "How to test".
@@ -18,7 +19,7 @@ This repo is the **front door**: login, staff and roles, sessions, Settings, the
 - `lib/users.js` (scrypt), `lib/sessions.js` (12 h / idle / PIN lock), `lib/limiter.js` (lockout), `lib/config.js` (data/config.json).
 - `lib/x509.js` + `lib/acme.js` + `lib/renew.js` — dev certificate and Let's Encrypt DNS-01, no dependencies.
 - `public/shared/` — the shared look every module uses (DESIGN.md in TDC-Office-Plan). `tdc.css` is **generated**: edit `scripts/build-css.js` (tokens, accents, dark values) or `scripts/tdc-css-components.css`, then `node scripts/build-css.js`. `public/js/home.js` — home page.
-- Design changes go through the Shared Design agent: open a PR and let it review and merge; open `Design: ...` issues in TDC-Office-Plan when DESIGN.md is unclear.
+- Follow DESIGN.md exactly; don't restyle on your own. When DESIGN.md is unclear or won't work, open a `Design: ...` issue in TDC-Office-Plan for the Shared Design agent instead of guessing.
 - `examples/hello-module/` — the sample module other agents copy. `scripts/check-module.js` — contract checker.
 - `npm test` — `node --test`, runs on Windows and Linux in CI.
 
