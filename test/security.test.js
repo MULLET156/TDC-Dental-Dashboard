@@ -129,6 +129,13 @@ test('static files cannot escape the public folder', async (t) => {
   assert.ok(sh.headers.etag);
   assert.equal((await ctx.req('GET', '/shared/shell.js', { headers: { 'if-none-match': sh.headers.etag } })).status, 304);
   assert.equal((await ctx.req('GET', '/shared/tdc.css')).headers['cache-control'], 'no-cache');
+  // Home-screen icon and manifest (DESIGN.md §10)
+  const man = await ctx.req('GET', '/manifest.webmanifest');
+  assert.equal(man.status, 200);
+  assert.equal(man.headers['content-type'], 'application/manifest+json');
+  assert.equal(man.json.short_name, 'TDC Office');
+  assert.equal((await ctx.req('GET', '/apple-touch-icon.png')).headers['content-type'], 'image/png');
+  assert.equal((await ctx.req('GET', '/shared/tdc-shared.js')).status, 200);
   const font = await ctx.req('GET', '/shared/fonts/figtree.woff2');
   assert.equal(font.status, 200);
   assert.equal(font.headers['content-type'], 'font/woff2');

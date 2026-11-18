@@ -9,10 +9,24 @@ const path = require('node:path');
 const css = fs.readFileSync(path.join(__dirname, '..', 'public', 'shared', 'tdc.css'), 'utf8');
 const shell = fs.readFileSync(path.join(__dirname, '..', 'public', 'shared', 'shell.js'), 'utf8');
 
+const shared = fs.readFileSync(path.join(__dirname, '..', 'public', 'shared', 'tdc-shared.css'), 'utf8');
+const sharedJs = fs.readFileSync(path.join(__dirname, '..', 'public', 'shared', 'tdc-shared.js'), 'utf8');
+
+test('tdc.css imports the suite file tdc-shared.css first (DESIGN.md §9)', () => {
+  const firstRule = css.replace(/\r/g, '').replace(/\/\*[\s\S]*?\*\//g, '').trim().split('\n')[0];
+  assert.equal(firstRule, '@import url("tdc-shared.css");');
+  assert.match(shared, /^\/\* TDC shared stylesheet — TDC-Office-Plan\/brand\/tdc-shared\.css/);
+  assert.match(sharedJs, /^\/\* TDC shared script — TDC-Office-Plan\/brand\/tdc-shared\.js/);
+  // The colour names tdc-shared.css uses are mapped to the --tdc-* tokens.
+  for (const v of ['--surface', '--line', '--sunk', '--muted', '--ink', '--bg', '--accent', '--accent-soft', '--pg']) assert.ok(css.includes(`${v}: var(--tdc-`), v);
+});
+
 test('fonts come from /shared/fonts only, never from outside', () => {
-  assert.ok(!/https?:\/\//.test(css.replace(/data:image\/svg\+xml[^)]*/g, '').replace(/xmlns='[^']*'/g, '')), 'no outside URLs in tdc.css');
+  const strip = (t) => t.replace(/data:image\/svg\+xml[^)]*/g, '').replace(/xmlns='[^']*'/g, '');
+  assert.ok(!/https?:\/\//.test(strip(css)), 'no outside URLs in tdc.css');
+  assert.ok(!/https?:\/\//.test(strip(shared)), 'no outside URLs in tdc-shared.css');
   for (const f of ['figtree', 'archivo', 'jetbrains-mono']) {
-    assert.match(css, new RegExp(`url\\("/shared/fonts/${f}\\.woff2"\\)`));
+    assert.ok(shared.includes(`url(fonts/${f}.woff2)`), f); // relative to /shared/ → /shared/fonts/
     assert.ok(fs.existsSync(path.join(__dirname, '..', 'public', 'shared', 'fonts', `${f}.woff2`)));
   }
   assert.match(css, /font-stretch: 80%/);
@@ -51,8 +65,10 @@ test('shell.js uses the brand logos and never inserts scripts', () => {
     assert.ok(shell.includes(`/shared/${f}`), f);
     assert.ok(fs.existsSync(path.join(__dirname, '..', 'public', 'shared', f)), f);
   }
-  assert.ok(!/createElement\(['"]script/.test(shell));
-  assert.ok(!/\beval\(|new Function\(/.test(shell));
+  // The only script the shell adds is the suite's own shared file (DESIGN.md §9).
+  const scripts = shell.match(/\.src = '[^']*'/g) || [];
+  assert.deepEqual(scripts, [".src = '/shared/tdc-shared.js'"]);
+  assert.ok(!/\beval\(|new Function\(|innerHTML\s*=\s*[^'"]*\+/.test(shell));
 });
 
 test('tdc.css is up to date with scripts/build-css.js', () => {

@@ -37,3 +37,21 @@
     });
   });
 })();
+
+/* Design kit: toast and dialog (DESIGN.md §11). */
+(function () {
+  'use strict';
+  var t = document.getElementById('kit-toast');
+  if (t) t.addEventListener('click', function () {
+    window.TDC.toast('Marked done', { action: 'Undo', onAction: function () { window.TDC.toast('Undone'); } });
+  });
+  var dlg = document.getElementById('kit-dialog');
+  if (!dlg) return;
+  var opener = document.getElementById('kit-dialog-open');
+  function close() { dlg.hidden = true; opener.focus(); }
+  opener.addEventListener('click', function () { dlg.hidden = false; dlg.querySelector('input').focus(); });
+  document.getElementById('kit-dialog-close').addEventListener('click', close);
+  document.getElementById('kit-dialog-form').addEventListener('submit', function (e) { e.preventDefault(); close(); window.TDC.toast('Task saved'); });
+  dlg.addEventListener('click', function (e) { if (e.target === dlg) close(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !dlg.hidden) close(); });
+})();

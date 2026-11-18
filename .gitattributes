@@ -1,0 +1,6 @@
+# DESIGN.md §9: the suite's shared files must stay byte-for-byte copies of
+# TDC-Office-Plan/brand, so never convert their line endings (also on Windows).
+public/shared/tdc-shared.css -text
+public/shared/tdc-shared.js -text
+*.woff2 binary
+*.png binary
