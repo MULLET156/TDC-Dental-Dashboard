@@ -13,7 +13,7 @@ const shared = fs.readFileSync(path.join(__dirname, '..', 'public', 'shared', 't
 const sharedJs = fs.readFileSync(path.join(__dirname, '..', 'public', 'shared', 'tdc-shared.js'), 'utf8');
 
 test('tdc.css imports the suite file tdc-shared.css first (DESIGN.md §9)', () => {
-  const firstRule = css.replace(/\/\*[\s\S]*?\*\//g, '').trim().split('\n')[0];
+  const firstRule = css.replace(/\r/g, '').replace(/\/\*[\s\S]*?\*\//g, '').trim().split('\n')[0];
   assert.equal(firstRule, '@import url("tdc-shared.css");');
   assert.match(shared, /^\/\* TDC shared stylesheet — TDC-Office-Plan\/brand\/tdc-shared\.css/);
   assert.match(sharedJs, /^\/\* TDC shared script — TDC-Office-Plan\/brand\/tdc-shared\.js/);
