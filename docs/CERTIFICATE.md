@@ -8,8 +8,10 @@
 
 To make that renewal hands-free, we use a small free service called **acme-dns**. You add **one** DNS record at GoDaddy, one time, that hands over *only* the certificate check for the office name to acme-dns. Nothing else about your domain or website changes.
 
-> **Decision for Ryan before going live:** by default this uses the free public acme-dns service at `auth.acme-dns.io`. Its operator could in theory get a certificate for `office.toledodentalcare.com` (only that name, and it would only matter to someone already inside the office network). If you'd rather not rely on it, there are two alternatives: run acme-dns ourselves later, or move DNS for the domain to a provider with an API. Tell me which you prefer; the code supports switching.
-
+> **Ryan's choice (2026-11-17): move the domain's DNS to Cloudflare** (free plan, DNS only) **before going live.** The Dashboard will then get and renew its certificate through Cloudflare's DNS API, so we don't rely on the public acme-dns service. Notes:
+> - **DNS only.** The website, email and other hosting stay where they are. All existing GoDaddy DNS records get re-created at Cloudflare first; nothing should change for visitors.
+> - **No Cloudflare Tunnel or proxy for the Dashboard.** A tunnel would send patient information through Cloudflare, which signs a HIPAA BAA only on its Enterprise plan, and it would put the Dashboard on the internet. The office server stays reachable only from the office network.
+> - **To do before the live stage:** add a Cloudflare DNS provider to the Dashboard's certificate helper (`lib/acme.js`, with a Cloudflare API token limited to editing this one zone's DNS, kept in `data/`, never in the repo), then update the steps below. Until then, the acme-dns steps below still work.
 ---
 
 ## What you need
