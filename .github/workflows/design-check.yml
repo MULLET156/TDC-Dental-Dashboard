@@ -1,0 +1,35 @@
+name: Design check
+# DESIGN.md §9: the Dashboard's copies of the suite's shared files must match
+# TDC-Office-Plan/brand exactly, and nothing may load fonts from outside sites.
+on:
+  push:
+    branches: [main]
+  pull_request:
+jobs:
+  design-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Shared files match TDC-Office-Plan/brand
+        run: |
+          set -e
+          for f in tdc-shared.css tdc-shared.js; do
+            curl -fsSL "https://raw.githubusercontent.com/MULLET156/TDC-Office-Plan/main/brand/$f" -o "/tmp/$f"
+            if ! cmp -s "/tmp/$f" "public/shared/$f"; then
+              echo "::error file=public/shared/$f::public/shared/$f differs from TDC-Office-Plan/brand/$f. Copy the file from the plan repo (never edit the copy)."
+              diff "/tmp/$f" "public/shared/$f" | head -40 || true
+              exit 1
+            fi
+          done
+          for f in figtree archivo jetbrains-mono; do
+            curl -fsSL "https://raw.githubusercontent.com/MULLET156/TDC-Office-Plan/main/brand/fonts/$f.woff2" -o "/tmp/$f.woff2"
+            cmp -s "/tmp/$f.woff2" "public/shared/fonts/$f.woff2" || { echo "::error::public/shared/fonts/$f.woff2 differs from brand/fonts"; exit 1; }
+          done
+          echo "Shared files and fonts match TDC-Office-Plan/brand."
+      - name: No fonts from outside sites
+        run: |
+          if grep -rInE "fonts\.(googleapis|gstatic)\.com|use\.typekit|fonts\.bunny|@import url\(['\"]?https?:" public lib examples scripts --include=*.css --include=*.js --include=*.html; then
+            echo "::error::Fonts must come from /shared/fonts/, never from an outside site (DESIGN.md §3)."
+            exit 1
+          fi
+          echo "No outside font links."

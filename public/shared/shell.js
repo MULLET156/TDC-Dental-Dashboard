@@ -284,12 +284,12 @@
 
   // ---------- Phone: bottom tab bar + More sheet ----------
   function buildMore(me, nav) {
-    var scrim = el('div', { 'class': 'tdc-sheet-scrim', hidden: '' });
-    var sheet = el('div', { 'class': 'tdc-sheet', role: 'dialog', 'aria-label': 'More', hidden: '' });
-    var actionsSlot = el('div', { 'class': 'tdc-sheet-actions' });
+    var scrim = el('div', { 'class': 'tdc-more-scrim', hidden: '' });
+    var sheet = el('div', { 'class': 'tdc-more-sheet', role: 'dialog', 'aria-label': 'More', hidden: '' });
+    var actionsSlot = el('div', { 'class': 'tdc-more-actions' });
     sheet.appendChild(actionsSlot);
-    sheet.appendChild(appsList(nav, 'tdc-sheet-list'));
-    var acct = el('div', { 'class': 'tdc-sheet-list' });
+    sheet.appendChild(appsList(nav, 'tdc-more-list'));
+    var acct = el('div', { 'class': 'tdc-more-list' });
     acct.appendChild(el('h3', { text: me.name }));
     acct.appendChild(withIcon(el('a', { href: '/account' }, ['My account']), 'user'));
     var t = withIcon(el('button', { type: 'button' }, ['Light / dark theme']), 'moon');
@@ -345,7 +345,7 @@
   }
   function putBack(node) { if (node && node.__tdcHome && node.__tdcHome.parentNode) node.__tdcHome.parentNode.insertBefore(node, node.__tdcHome.nextSibling); }
   function place() {
-    var actions = document.querySelector('main .tdc-actions, .tdc-hrow2 .tdc-actions, .tdc-sheet-actions .tdc-actions');
+    var actions = document.querySelector('main .tdc-actions, .tdc-hrow2 .tdc-actions, .tdc-more-actions .tdc-actions');
     var head = document.querySelector('.tdc-pagehead');
     var find = document.querySelector('.tdc-find');
     [actions, head, find].forEach(remember);
@@ -357,6 +357,51 @@
       putBack(head); putBack(find);
     }
     closeMenus();
+  }
+
+  // ---------- Group headings (DESIGN.md §5, built by tdc-shared.css/.js) ----------
+  // Pages may write <h3 class="tdc-group">Name <span class="tdc-count">3</span></h3> (v0.1 style)
+  // or the suite markup <h3 class="tdc-gh"><span>Name</span><span class="tdc-gcount">3</span></h3>.
+  // Both end up as the suite heading: above its card, with a fold arrow.
+  function groupHeadings() {
+    document.querySelectorAll('.tdc-group:not(.tdc-gh)').forEach(function (h) {
+      var count = h.querySelector(':scope > .tdc-count');
+      if (count) count.classList.add('tdc-gcount');
+      // The name must be the heading's first element: wrap loose text in a <span>.
+      if (!h.firstElementChild || h.firstChild !== h.firstElementChild || h.firstElementChild === count) {
+        var name = document.createElement('span');
+        while (h.firstChild && h.firstChild !== count) name.appendChild(h.firstChild);
+        h.insertBefore(name, h.firstChild);
+      }
+      h.classList.add('tdc-gh');
+    });
+  }
+
+  // The suite's shared script (DESIGN.md §9): fold arrows on group headings.
+  // Loaded once by the shell, so module pages don't have to include it.
+  function loadSharedScript() {
+    if (document.querySelector('script[src="/shared/tdc-shared.js"]')) return;
+    var sc = document.createElement('script');
+    sc.src = '/shared/tdc-shared.js';
+    sc.defer = true;
+    document.head.appendChild(sc);
+  }
+
+  // ---------- Toasts (DESIGN.md §11) ----------
+  // TDC.toast('Saved') or TDC.toast('Marked done', { action: 'Undo', onAction: fn, ms: 5000 })
+  function toast(text, opts) {
+    opts = opts || {};
+    var old = document.querySelector('.tdc-toast');
+    if (old) old.remove();
+    var t = el('div', { 'class': 'tdc-toast', role: 'status', 'aria-live': 'polite' }, [el('span', { text: text })]);
+    if (opts.action) {
+      var b = el('button', { type: 'button', text: opts.action });
+      b.addEventListener('click', function () { t.remove(); if (opts.onAction) opts.onAction(); });
+      t.appendChild(b);
+    }
+    document.body.appendChild(t);
+    setTimeout(function () { t.remove(); }, opts.ms || 4000);
+    return t;
   }
 
   // ---------- (i) info button on page banners (DESIGN.md §5) ----------
@@ -427,6 +472,7 @@
     getJson: getJson,
     hydrateIcons: hydrateIcons,
     infoButtons: infoButtons,
+    toast: toast,
     ready: new Promise(function (res, rej) { resolveReady = res; rejectReady = rej; })
   };
   window.TDC.ready.catch(function () {});
@@ -435,6 +481,8 @@
     hydrateIcons();
     swapLogos();
     infoButtons();
+    groupHeadings();
+    loadSharedScript();
     explicitPage = document.body.hasAttribute('data-page-status') || document.body.hasAttribute('data-page-kind');
     watchPageColour();
     if (document.body.getAttribute('data-shell') === 'none') return;

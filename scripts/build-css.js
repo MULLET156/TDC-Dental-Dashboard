@@ -85,10 +85,9 @@ const head = `/* TDC Office shared look — CONTRACT §6 and DESIGN.md (TDC-Offi
    Modules: use the --tdc-* variables and .tdc-* classes; set your accent with
    <body data-module="your-id">. Never load outside fonts. */
 
-/* ---------- Fonts (served by the Dashboard, never from outside) ---------- */
-@font-face { font-family: "Figtree"; src: url("/shared/fonts/figtree.woff2") format("woff2"); font-weight: 300 900; font-style: normal; font-display: swap; }
-@font-face { font-family: "Archivo"; src: url("/shared/fonts/archivo.woff2") format("woff2"); font-weight: 100 900; font-stretch: 62% 125%; font-style: normal; font-display: swap; }
-@font-face { font-family: "JetBrains Mono"; src: url("/shared/fonts/jetbrains-mono.woff2") format("woff2"); font-weight: 100 800; font-style: normal; font-display: swap; }
+/* DESIGN.md §9: the suite's shared file, an exact copy of TDC-Office-Plan/brand/tdc-shared.css
+   (fonts, group headings, touch sizes, toasts, dialogs, form fields, printing). Never edit the copy. */
+@import url("tdc-shared.css");
 
 /* ---------- Tokens (DESIGN.md §2) ---------- */
 :root {
@@ -116,6 +115,12 @@ ${kindVars(KINDS_LIGHT)}
   --tdc-alert-bg: var(--tdc-alert-soft);
   --tdc-header-h: 64px;
 }
+/* Names tdc-shared.css uses for the app's colours (DESIGN.md §9). --pg is the page colour. */
+:root, body, [data-module] {
+  --surface: var(--tdc-surface); --line: var(--tdc-line); --sunk: var(--tdc-sunk); --muted: var(--tdc-muted);
+  --ink: var(--tdc-ink); --bg: var(--tdc-bg); --accent: var(--tdc-accent); --accent-soft: var(--tdc-accent-soft);
+}
+body, [data-module]:not(body) { --pg: var(--tdc-page); }
 ${accentRules(false, '')}
 
 /* ---------- Dark mode (DESIGN.md §6): device setting, or the theme button ---------- */

@@ -40,9 +40,10 @@ module.exports = `
   </div>
 </div>
 
-<!-- A list: groups and rows with a 6px status stripe -->
+<!-- A list: group headings ABOVE their card (.tdc-gh: name first, then .tdc-gcount; tap to fold),
+     and rows with a 6px status stripe. The rows after a heading become that group's card. -->
 <section class="tdc-list" aria-label="Cases">
-  <h3 class="tdc-group" data-status="911">911 · Not finished, patient in within 2 days <span class="tdc-count">2</span></h3>
+  <h3 class="tdc-gh" data-status="911"><span>911 · Not finished, patient in within 2 days</span><span class="tdc-gcount">2</span></h3>
   <div class="tdc-row" data-status="alert">
     <div class="tdc-row-main">
       <p class="tdc-row-title">L. Bianchi <span class="tdc-id">#10424</span></p>
@@ -62,7 +63,7 @@ module.exports = `
     </div>
     <div class="tdc-row-side"><div class="tdc-urgent">Delivery Tue, Nov 17</div><span class="tdc-meter" data-status="alert" style="--value: 40%"></span></div>
   </div>
-  <h3 class="tdc-group" data-status="warn">Due soon <span class="tdc-count">2</span></h3>
+  <h3 class="tdc-gh" data-status="warn"><span>Due soon</span><span class="tdc-gcount">2</span></h3>
   <div class="tdc-row" data-status="warn">
     <div class="tdc-row-main">
       <p class="tdc-row-title">Shock treat dental unit waterlines</p>
@@ -78,7 +79,7 @@ module.exports = `
     </div>
     <div class="tdc-row-act"><button class="tdc-btn" type="button">Done</button></div>
   </div>
-  <h3 class="tdc-group" data-status="ok">Ready to deliver <span class="tdc-count">1</span></h3>
+  <h3 class="tdc-gh" data-status="ok"><span>Ready to deliver</span><span class="tdc-gcount">1</span></h3>
   <div class="tdc-row" data-status="ok">
     <div class="tdc-row-main">
       <p class="tdc-row-title">T. Nguyen <span class="tdc-id">#10423</span></p>
@@ -90,7 +91,7 @@ module.exports = `
 
 <!-- Stock rows: meter with a threshold tick (--mark) -->
 <section class="tdc-list" aria-label="Order list">
-  <h3 class="tdc-group">Henry Schein <span class="tdc-count">2 products · $293.10</span></h3>
+  <h3 class="tdc-gh"><span>Henry Schein</span><span class="tdc-gcount">2</span><span>$293.10</span></h3>
   <div class="tdc-row" data-status="alert">
     <div class="tdc-row-main">
       <p class="tdc-row-title"><span class="tdc-chip tdc-chip-911">911</span> Universal composite, A1</p>
@@ -108,6 +109,24 @@ module.exports = `
     <div class="tdc-row-side" style="font-size:16px;color:var(--tdc-ink);font-weight:700">$79.20</div>
   </div>
 </section>
+
+<h2 class="tdc-section-title">Toast and dialog</h2>
+<div class="tdc-btn-row">
+  <button class="tdc-btn" type="button" id="kit-toast">Show a toast</button>
+  <button class="tdc-btn" type="button" id="kit-dialog-open">Open a dialog</button>
+</div>
+<!-- Dialog: .tdc-scrim (dimmed page) + .tdc-dialog. Phones show it as a sheet from the bottom. -->
+<div class="tdc-scrim" id="kit-dialog" hidden>
+  <div class="tdc-dialog" role="dialog" aria-modal="true" aria-labelledby="kit-dialog-title">
+    <h2 id="kit-dialog-title">Add a task</h2>
+    <form class="tdc-form" action="#" method="get" id="kit-dialog-form">
+      <label>Task name<input name="name" value="Check oxygen levels"></label>
+      <label>Frequency<select name="f"><option>Weekly</option><option>Monthly</option></select></label>
+      <label class="tdc-check"><input type="checkbox" name="a" checked> Show on Today</label>
+      <div class="tdc-btn-row"><button class="tdc-btn tdc-btn-primary" type="submit">Save</button><button class="tdc-btn" type="button" id="kit-dialog-close">Cancel</button></div>
+    </form>
+  </div>
+</div>
 
 <h2 class="tdc-section-title">Callout and empty state</h2>
 <div class="tdc-callout" data-status="alert" role="status"><span data-icon="alert"></span><div><strong>Needs you today</strong>2 lab cases are late · 1 spore test is 2 days late</div></div>

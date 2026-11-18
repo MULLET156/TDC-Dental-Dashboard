@@ -32,7 +32,10 @@ It reads `MODULE_SECRET` from that file (never prints it), then checks `/health`
 - `<body data-module="your-id">` sets your accent colour (`daysheet`, `finder`, `voice`, `numbers`). Ask the Shared Design agent for a new one before adding a module.
 - Put the page's buttons in `<nav class="tdc-actions">` as `<a class="tdc-hbtn" data-kind="list|new|log|setup|money|warn|tool">`. Mark the current one with `aria-current="page"`. `shell.js` moves them into the header (and into **More** on phones).
 - Icons: `<span data-icon="bell"></span>`. `shell.js` fills in the shared icon. Names: calendar, search, mic, chart, flask, tooth, box, wrench, home, settings, bell, alert, clock, pending, check, list, plus, history, dollar, truck, cart, pulse, pause, edit, filter, arrow, link.
-- Status: `data-status="accent|alert|911|warn|low|ok|new|info"` on `.tdc-stat`, `.tdc-row`, `.tdc-group`, `.tdc-chip`, `.tdc-meter` and `.tdc-callout`.
+- Status: `data-status="accent|alert|911|warn|low|ok|new|info"` on `.tdc-stat`, `.tdc-row`, `.tdc-gh`, `.tdc-chip`, `.tdc-meter` and `.tdc-callout`.
+- Group headings sit **above** their card: `<h3 class="tdc-gh" data-status="warn"><span>Due soon</span><span class="tdc-gcount">2</span></h3>`, then the rows. Tapping a heading folds the group, and the device remembers it. (`.tdc-group` still works; the shell converts it.)
+- Pop-ups: `TDC.toast('Saved')` or `TDC.toast('Marked done', { action: 'Undo', onAction })`. Dialogs: `.tdc-scrim` around a `.tdc-dialog`; on phones it slides up as a sheet. See the Design kit.
+- Use `<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">` so nothing sits under the iPhone notch.
 - On phones, `.tdc-stats` becomes the bottom tab bar (give long labels a `data-short="…"`), `.tdc-pagehead` and `.tdc-find` move into the header, and dropdowns hide behind a **Filters** button. You don't write any of that.
 - Only `--tdc-*` colours, no fonts of your own, and everything must work in dark mode (it will, if you only use the variables).
 

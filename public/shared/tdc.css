@@ -6,10 +6,9 @@
    Modules: use the --tdc-* variables and .tdc-* classes; set your accent with
    <body data-module="your-id">. Never load outside fonts. */
 
-/* ---------- Fonts (served by the Dashboard, never from outside) ---------- */
-@font-face { font-family: "Figtree"; src: url("/shared/fonts/figtree.woff2") format("woff2"); font-weight: 300 900; font-style: normal; font-display: swap; }
-@font-face { font-family: "Archivo"; src: url("/shared/fonts/archivo.woff2") format("woff2"); font-weight: 100 900; font-stretch: 62% 125%; font-style: normal; font-display: swap; }
-@font-face { font-family: "JetBrains Mono"; src: url("/shared/fonts/jetbrains-mono.woff2") format("woff2"); font-weight: 100 800; font-style: normal; font-display: swap; }
+/* DESIGN.md §9: the suite's shared file, an exact copy of TDC-Office-Plan/brand/tdc-shared.css
+   (fonts, group headings, touch sizes, toasts, dialogs, form fields, printing). Never edit the copy. */
+@import url("tdc-shared.css");
 
 /* ---------- Tokens (DESIGN.md §2) ---------- */
 :root {
@@ -62,6 +61,12 @@
   --tdc-alert-bg: var(--tdc-alert-soft);
   --tdc-header-h: 64px;
 }
+/* Names tdc-shared.css uses for the app's colours (DESIGN.md §9). --pg is the page colour. */
+:root, body, [data-module] {
+  --surface: var(--tdc-surface); --line: var(--tdc-line); --sunk: var(--tdc-sunk); --muted: var(--tdc-muted);
+  --ink: var(--tdc-ink); --bg: var(--tdc-bg); --accent: var(--tdc-accent); --accent-soft: var(--tdc-accent-soft);
+}
+body, [data-module]:not(body) { --pg: var(--tdc-page); }
 [data-module="dashboard"] { --tdc-accent: #23333D; --tdc-accent-soft: #E1E6EA; --tdc-accent-ink: #23333D; }
 [data-module="maintenance"] { --tdc-accent: #0E6B73; --tdc-accent-soft: #DCEFEF; --tdc-accent-ink: #0E6B73; }
 [data-module="lab"] { --tdc-accent: #4E5833; --tdc-accent-soft: #E5E9D8; --tdc-accent-ink: #4E5833; }
@@ -205,6 +210,10 @@ code, .tdc-mono, time { font-family: var(--tdc-font-mono); }
 [hidden] { display: none !important; }
 .tdc-visually-hidden { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
+/* ---------- iPhone notch and home bar (DESIGN.md §10, with viewport-fit=cover) ---------- */
+body { padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-area-inset-right, 0px); }
+.tdc-header { padding-top: env(safe-area-inset-top, 0px); }
+
 /* ---------- Page width (DESIGN.md §5): 1140px, 16px sides ---------- */
 .tdc-main, .tdc-header-in, .tdc-header-phone { width: 100%; max-width: var(--tdc-width); margin: 0 auto; padding-left: 16px; padding-right: 16px; }
 .tdc-main { padding-top: 20px; padding-bottom: 48px; }
@@ -243,16 +252,16 @@ code, .tdc-mono, time { font-family: var(--tdc-font-mono); }
   position: absolute; right: 0; top: calc(100% + 8px); z-index: 60; width: 300px; max-height: 70vh; overflow: auto;
   background: var(--tdc-surface); border: 1px solid var(--tdc-line); border-radius: var(--tdc-radius); box-shadow: 0 8px 28px rgba(0, 0, 0, .18); padding: 8px;
 }
-.tdc-menu h3, .tdc-sheet h3 { font-size: 12px; font-family: var(--tdc-font); font-stretch: 100%; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--tdc-muted); margin: 10px 10px 4px; }
-.tdc-menu a, .tdc-menu button, .tdc-sheet-list a, .tdc-sheet-list button {
+.tdc-menu h3, .tdc-more-sheet h3 { font-size: 12px; font-family: var(--tdc-font); font-stretch: 100%; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--tdc-muted); margin: 10px 10px 4px; }
+.tdc-menu a, .tdc-menu button, .tdc-more-list a, .tdc-more-list button {
   display: flex; align-items: center; gap: 10px; width: 100%; min-height: var(--tdc-touch); padding: 0 10px; border: 0; border-radius: 8px;
   background: none; font: inherit; color: var(--tdc-ink); text-decoration: none; text-align: left; cursor: pointer;
 }
-.tdc-menu a:hover, .tdc-menu button:hover, .tdc-sheet-list a:hover, .tdc-sheet-list button:hover { background: var(--tdc-sunk); }
-.tdc-menu a[aria-current="page"], .tdc-sheet-list a[aria-current="page"] { background: var(--tdc-accent-soft); color: var(--tdc-accent-ink); font-weight: 600; }
-.tdc-menu .tdc-sub, .tdc-sheet-list .tdc-sub { padding-left: 42px; font-size: 14px; }
-.tdc-menu .tdc-swatch, .tdc-sheet-list .tdc-swatch { display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 8px; background: var(--tdc-accent-soft); color: var(--tdc-accent-ink); flex: none; }
-.tdc-menu .tdc-swatch .tdc-icon, .tdc-sheet-list .tdc-swatch .tdc-icon { width: 18px; height: 18px; }
+.tdc-menu a:hover, .tdc-menu button:hover, .tdc-more-list a:hover, .tdc-more-list button:hover { background: var(--tdc-sunk); }
+.tdc-menu a[aria-current="page"], .tdc-more-list a[aria-current="page"] { background: var(--tdc-accent-soft); color: var(--tdc-accent-ink); font-weight: 600; }
+.tdc-menu .tdc-sub, .tdc-more-list .tdc-sub { padding-left: 42px; font-size: 14px; }
+.tdc-menu .tdc-swatch, .tdc-more-list .tdc-swatch { display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 8px; background: var(--tdc-accent-soft); color: var(--tdc-accent-ink); flex: none; }
+.tdc-menu .tdc-swatch .tdc-icon, .tdc-more-list .tdc-swatch .tdc-icon { width: 18px; height: 18px; }
 .tdc-ext { margin-left: auto; color: var(--tdc-muted); }
 
 /* ---------- Header buttons, colour by kind (DESIGN.md §2) ---------- */
@@ -327,8 +336,6 @@ main .tdc-actions { margin-bottom: 12px; }
 .tdc-list { background: var(--tdc-surface); border: 1px solid var(--tdc-line); border-radius: var(--tdc-radius); overflow: hidden; margin: 0 0 14px; }
 .tdc-group { display: flex; align-items: center; gap: 8px; padding: 8px 14px; background: var(--tdc-sunk); border-bottom: 1px solid var(--tdc-line); font-family: var(--tdc-font-head); font-stretch: 80%; font-weight: 800; font-size: 14px; text-transform: uppercase; letter-spacing: .04em; color: var(--s-text, var(--tdc-ink)); margin: 0; }
 .tdc-group .tdc-count { margin-left: auto; font-family: var(--tdc-font); font-stretch: 100%; font-weight: 400; font-size: 13px; text-transform: none; letter-spacing: 0; color: var(--tdc-muted); }
-.tdc-group[data-status="911"] { background: var(--tdc-911); color: #FFFFFF; border-bottom-color: var(--tdc-911); }
-.tdc-group[data-status="911"] .tdc-count { color: #FFFFFF; }
 .tdc-row { position: relative; display: flex; align-items: center; gap: 12px; padding: 10px 14px 10px 20px; border-bottom: 1px solid var(--tdc-line); background: var(--tdc-surface); }
 .tdc-row:last-child { border-bottom: 0; }
 .tdc-row::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 6px; background: var(--s, transparent); }
@@ -341,6 +348,10 @@ main .tdc-actions { margin-bottom: 12px; }
 .tdc-row-side .tdc-urgent { color: var(--tdc-alert); font-weight: 700; }
 .tdc-row-act { flex: none; display: flex; align-items: center; gap: 6px; }
 
+/* Group headings above their card (.tdc-gh, built by tdc-shared.css / .js, DESIGN.md §5 and §9).
+   The colour dot takes the group's status colour; .tdc-group headings get .tdc-gh from shell.js. */
+html .tdc-gh[data-status] { --gc: var(--s); --gc-soft: var(--s-soft); }
+
 /* ---------- Chips ---------- */
 .tdc-chip { display: inline-flex; align-items: center; min-height: 22px; padding: 1px 8px; border-radius: 6px; background: var(--tdc-sunk); color: var(--tdc-ink); font-size: 12px; font-weight: 600; white-space: nowrap; }
 .tdc-chip[data-status] { background: var(--s-soft); color: var(--s-text); }
@@ -351,6 +362,18 @@ main .tdc-actions { margin-bottom: 12px; }
 .tdc-meter::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: var(--value); max-width: 100%; border-radius: 3px; background: var(--s, var(--tdc-accent)); }
 .tdc-meter[style*="--mark"]::after { content: ""; position: absolute; left: var(--mark); top: -3px; width: 2px; height: 12px; margin-left: -1px; background: var(--tdc-ink); border-radius: 1px; }
 .tdc-meter-label { margin-left: 8px; font-family: var(--tdc-font-mono); font-size: 12px; color: var(--tdc-muted); }
+
+/* ---------- Dialogs (DESIGN.md §11; look from tdc-shared.css). Phones: a sheet from the bottom. ---------- */
+.tdc-scrim { position: fixed; inset: 0; z-index: 85; display: flex; align-items: center; justify-content: center; padding: 16px; }
+.tdc-dialog { width: min(480px, 100%); max-height: 85vh; overflow: auto; padding: 20px 22px; }
+.tdc-dialog > :last-child { margin-bottom: 0; }
+@media (max-width: 640px) {
+  .tdc-scrim { align-items: flex-end; padding: 0; }
+  .tdc-scrim .tdc-dialog { width: 100%; max-height: 88vh; }
+}
+
+/* ---------- Toasts (DESIGN.md §11; look from tdc-shared.css): bottom centre, above the tab bar and home bar ---------- */
+.tdc-toast { position: fixed; z-index: 90; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); display: flex; gap: 14px; align-items: center; }
 
 /* ---------- Callout (e.g. "Needs you today") ---------- */
 .tdc-callout { display: flex; gap: 12px; align-items: flex-start; padding: 12px 16px; margin: 0 0 18px; background: var(--s-soft, var(--tdc-accent-soft)); border-left: 6px solid var(--s, var(--tdc-accent)); border-radius: var(--tdc-radius); }
@@ -523,14 +546,37 @@ details.tdc-card > summary { cursor: pointer; font-weight: 650; min-height: var(
   .tdc-stat[aria-selected="true"], .tdc-stat[aria-current="page"] { background: var(--s-soft); color: var(--s-text); }
   .tdc-stat-more { display: flex !important; --s: var(--tdc-ink); --s-text: var(--tdc-ink); --s-soft: var(--tdc-sunk); }
 
-  .tdc-sheet {
+  .tdc-more-sheet {
     position: fixed; left: 0; right: 0; bottom: 0; z-index: 70; max-height: 82vh; overflow: auto;
     padding: 10px 10px calc(90px + env(safe-area-inset-bottom)); background: var(--tdc-surface);
     border-top-left-radius: 16px; border-top-right-radius: 16px; box-shadow: 0 -8px 30px rgba(0, 0, 0, .25);
   }
-  .tdc-sheet .tdc-actions { justify-content: flex-start; padding: 6px 6px 10px; }
-  .tdc-sheet-scrim { position: fixed; inset: 0; z-index: 65; background: rgba(0, 0, 0, .35); }
+  .tdc-more-sheet .tdc-actions { justify-content: flex-start; padding: 6px 6px 10px; }
+  .tdc-more-scrim { position: fixed; inset: 0; z-index: 65; background: rgba(0, 0, 0, .35); }
 }
 @media (min-width: 641px) {
-  .tdc-sheet, .tdc-sheet-scrim, .tdc-tabbar-only { display: none !important; }
+  .tdc-more-sheet, .tdc-more-scrim, .tdc-tabbar-only { display: none !important; }
+}
+@media (max-width: 640px) {
+  .tdc-toast { bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
+}
+
+/* ---------- Touch screens: iPhone, iPad, Android (DESIGN.md §10) ----------
+   Decided by touch, not width, so an iPad in landscape keeps 44px targets.
+   tdc-shared.css covers buttons and selects; these are the Dashboard's own pieces and text fields. */
+@media (pointer: coarse) {
+  .tdc-hctl, .tdc-hbtn, .tdc-stat, .tdc-seg button, .tdc-tabs a, .tdc-filters-btn { min-height: var(--tdc-touch); }
+  .tdc-find input, .tdc-find select { min-height: var(--tdc-touch); }
+  /* DESIGN.md §11: form fields 44px on touch. Same selector as tdc-shared.css (which sets 40px), so this later rule wins. */
+  html :is(.tdc-dialog,.tdc-form) :is(input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]):not([type=file]),select) { min-height: var(--tdc-touch); }
+}
+
+/* ---------- Printing (DESIGN.md §11; the rest is in tdc-shared.css) ---------- */
+@media print {
+  .tdc-header { position: static; border-bottom: 0; }
+  .tdc-hright, .tdc-user-btn, .tdc-header-phone .tdc-find, .tdc-stats, .tdc-actions, .tdc-find, .tdc-seg, .tdc-groupby,
+  .tdc-more-sheet, .tdc-more-scrim, .tdc-info, .tdc-btn, .tdc-hbtn, .tdc-filters-btn, .tdc-tile-open { display: none !important; }
+  .tdc-help { display: block !important; }
+  .tdc-pagehead, .tdc-card, .tdc-list, .tdc-row { background: #fff !important; color: #000 !important; }
+  .tdc-main { max-width: none; padding: 0; }
 }

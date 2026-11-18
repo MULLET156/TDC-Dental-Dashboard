@@ -111,6 +111,8 @@ Every page in the suite uses one stylesheet and one header script, both served b
 - **Fonts:** Archivo, Figtree and JetBrains Mono, served from `/shared/fonts/`. Nothing loads from outside sites.
 - The sample module's **Design kit** page (`/m/hello/kit` with `DEMO_HELLO=1`) shows every piece with made-up data.
 
+The suite's shared files `public/shared/tdc-shared.css` and `tdc-shared.js` are **exact copies** of `TDC-Office-Plan/brand/` (DESIGN.md §9). Never edit them here; copy them again from the plan repo when they change. The **Design check** on GitHub fails if they differ. `tdc.css` imports `tdc-shared.css`, and `shell.js` loads `tdc-shared.js`, so modules get both automatically.
+
 `public/shared/tdc.css` is generated: change `scripts/build-css.js` (colours) or `scripts/tdc-css-components.css` (everything else), then run `node scripts/build-css.js`. A test fails if you forget.
 
 ## Counts from the Lab Tracker, Supply Room and Maintenance Tracker

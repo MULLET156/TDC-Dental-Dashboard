@@ -62,7 +62,7 @@ function page(who, title, inner, current = '') {
   const b = esc(who.base);
   return `<!doctype html>
 <html lang="en"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>${esc(title)} · Toledo Dental Care</title>
 <link rel="stylesheet" href="/shared/tdc.css">
 <script src="/shared/shell.js" defer></script>
